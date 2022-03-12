@@ -41,8 +41,7 @@ Theta2_grad = zeros(size(Theta2));
 
 a_1 = [ones(m, 1), X]';
 z_2 = Theta1 * a_1;
-z_2 = [ones(1, m); z_2];
-a_2 = sigmoid(z_2);
+a_2 = [ones(1, m); sigmoid(z_2)];
 z_3 = Theta2 * a_2;
 a_3 = sigmoid(z_3);
 
@@ -52,10 +51,10 @@ for i = 1:m
     y_vec(y(i), i) = 1;
 
     J += -y_vec(:, i)' * log(a_3(:, i)) - (1 - y_vec(:, i)') * log(1 - a_3(:, i));
-    J += (lambda / (2 * m)) * ((sum(sum((Theta1 .^ 2)(:, 2:end))) + sum(sum((Theta2 .^ 2)(:, 2:end)))));
 endfor
-
 J /= m;
+
+J += (lambda / (2 * m)) * ((sum(sum((Theta1 .^ 2)(:, 2:end))) + sum(sum((Theta2 .^ 2)(:, 2:end)))));
 
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
@@ -73,8 +72,7 @@ J /= m;
 %               first time.
 
 delta_3 = a_3 - y_vec;
-delta_2 = (Theta2' * delta_3) .* sigmoidGradient(z_2);
-delta_2 = delta_2(2:end, :);
+delta_2 = (Theta2(:, 2:end)' * delta_3) .* sigmoidGradient(z_2);
 Theta2_grad = (delta_3 * a_2') / m;
 Theta1_grad = (delta_2 * a_1') / m;
 
